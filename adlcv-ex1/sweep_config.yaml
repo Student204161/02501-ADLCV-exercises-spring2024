@@ -1,0 +1,28 @@
+program: text_classification.py
+method: bayes
+metric:
+  goal: minimize
+  name: val_loss
+parameters:
+  embed_dim:
+    values: [64, 128, 256, 512]
+  num_heads:
+    values: [1, 2, 4, 6, 8, 10]
+  num_layers:
+    values: [1, 2, 3, 4, 5, 6, 7 ,8]
+  dropout:
+    values: [0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
+  weight_decay:
+    values: [1e-2, 1e-3, 1e-4, 1e-5]
+  num_epochs:
+    value: 10
+  post_enc:
+    value: 'fixed'
+  pool:
+    value: 'max'
+  
+early_terminate:
+  type: hyperband
+  s: 2
+  eta: 3
+  max_iter: 27

@@ -1,0 +1,45 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.10.13",
+    "heartbeatAt": "2024-02-12T16:44:00.494249",
+    "startedAt": "2024-02-12T16:43:57.569119",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\Users\\khali\\OneDrive - Danmarks Tekniske Universitet\\Kandidat\\2. semester\\02501-ADLCV\\02501-ADLCV-exercises-spring2024\\adlcv-ex1\\text_classification.py",
+    "codePathLocal": "text_classification.py",
+    "codePath": "adlcv-ex1\\text_classification.py",
+    "git": {
+        "remote": "https://github.com/Student204161/02501-ADLCV-exercises-spring2024.git",
+        "commit": "e42cb9a01edf2337b29117736dae2bf5e11c166d"
+    },
+    "email": "97975723+Student204161@users.noreply.github.com",
+    "root": "C:/Users/khali/OneDrive - Danmarks Tekniske Universitet/Kandidat/2. semester/02501-ADLCV/02501-ADLCV-exercises-spring2024",
+    "host": "DESKTOP-0PI8E3H",
+    "username": "khali",
+    "executable": "c:\\Users\\khali\\OneDrive - Danmarks Tekniske Universitet\\conda_envs\\ml_ops\\python.exe",
+    "cpu_count": 2,
+    "cpu_count_logical": 4,
+    "cpu_freq": {
+        "current": 2511.0,
+        "min": 0.0,
+        "max": 2712.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2511.0,
+            "min": 0.0,
+            "max": 2712.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 117.05566024780273,
+            "used": 90.2995719909668
+        }
+    },
+    "memory": {
+        "total": 7.9190521240234375
+    }
+}
