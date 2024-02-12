@@ -1,2 +1,5 @@
 /testset.pt
 /trainset.pt
+.data/
+adlcv-ex1/__pycache__/transformer.cpython-310.pyc
+adlcv-ex1/.data/
