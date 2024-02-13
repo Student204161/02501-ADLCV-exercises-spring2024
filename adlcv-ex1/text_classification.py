@@ -127,7 +127,7 @@ if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
     print(f"Model will run on {device}")
     set_seed(seed=1)
-    
+
     #load sweep config
     with open('sweep_config.yaml', 'r') as file:
         sweep_config = yaml.safe_load(file)
@@ -138,4 +138,3 @@ if __name__ == "__main__":
     wandb.agent(sweep_id,main,count=6)
 
 
-    
