@@ -118,7 +118,7 @@ def main(config=None):
                 wandb.log({'val_acc': val_acc, 'epoch': e})
                 if val_acc > best_val_acc:
                     best_val_acc = val_acc
-                    torch.save(model.state_dict(), 'models' + wandb.run.name + '.pth')
+                    torch.save(model.state_dict(), 'models/' + wandb.run.name + '.pth')
                 
 
 
