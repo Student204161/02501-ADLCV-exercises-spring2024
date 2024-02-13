@@ -74,9 +74,6 @@ def main(config=None):
         opt = torch.optim.AdamW(lr=lr, params=model.parameters(), weight_decay=config.weight_decay)
         sch = torch.optim.lr_scheduler.LambdaLR(opt, lambda i: min(i / warmup_steps, 1.0))
 
-        # create a folder to save the model
-        if not os.path.exists('models'):
-            os.makedirs('models')
         # training loop
         for e in range(config.num_epochs):
             print(f'\n epoch {e}')
@@ -98,9 +95,6 @@ def main(config=None):
                 sch.step()
                 wandb.log({'train_loss': loss})
 
-            #save validation accuracy and only save the model if it is the best one
-            
-            best_val_acc = 0
             with torch.no_grad():
                 model.eval()
                 tot, cor= 0.0, 0.0
@@ -115,11 +109,7 @@ def main(config=None):
                     cor += float((label == out).sum().item())
                 val_acc = np.round((cor / tot),3)
                 print(f'-- {"validation"} accuracy {val_acc:.3}')
-                wandb.log({'val_acc': val_acc, 'epoch': e})
-                if val_acc > best_val_acc:
-                    best_val_acc = val_acc
-                    torch.save(model.state_dict(), 'models' + wandb.run.name + '.pth')
-                
+                wandb.log({'val_acc': val_acc})
 
 
 if __name__ == "__main__":
@@ -134,9 +124,14 @@ if __name__ == "__main__":
     # print('Doing Bayesian Sweep to estimate best hyperparameters with respect to validation loss')
     # import pprint
     # pprint.pprint(sweep_config)
-    sweep_id = wandb.sweep(sweep_config, project="transformer-imdb1")
+    sweep_id = wandb.sweep(sweep_config, project="transformer-imdb")
     
     wandb.agent(sweep_id,main,count=6)
 
-
+    with torch.no_grad():
+    model.eval()
+    tot, cor= 0.0, 0.0
+    for batch in test_iter:
+        input_seq = batch.text[0]
+    
     
