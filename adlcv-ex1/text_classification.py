@@ -127,15 +127,14 @@ if __name__ == "__main__":
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')  
     print(f"Model will run on {device}")
     set_seed(seed=1)
-
+    
+    #load sweep config
     with open('sweep_config.yaml', 'r') as file:
         sweep_config = yaml.safe_load(file)
     
-    # print('Doing Bayesian Sweep to estimate best hyperparameters with respect to validation loss')
-    # import pprint
-    # pprint.pprint(sweep_config)
+    #define sweep
     sweep_id = wandb.sweep(sweep_config, project="transformer-imdb1")
-    
+    #run sweep
     wandb.agent(sweep_id,main,count=6)
 
 
