@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
+import wandb
 
 
 from tqdm import tqdm
@@ -62,7 +62,11 @@ def train(T=500, cfg=True, img_size=16, input_channels=3, channels=32,
     optimizer = optim.AdamW(model.parameters(), lr=lr)
     mse = torch.nn.MSELoss()
     
-    logger = SummaryWriter(os.path.join("runs", experiment_name))
+    wandb.init(project="ddpm", name=experiment_name, config={"T": T, "cfg": cfg, "img_size": img_size, 
+                                                             "input_channels": input_channels, "channels": channels, "time_dim": time_dim, 
+                                                             "batch_size": batch_size, "lr": lr, "num_epochs": num_epochs, 
+                                                             "experiment_name": experiment_name, "show": show, "device": device})
+
     l = len(train_loader)
 
     min_train_loss = 1e10
@@ -84,12 +88,16 @@ def train(T=500, cfg=True, img_size=16, input_channels=3, channels=32,
             # Do not forget randomly discard labels
             p_uncod = 0.1
 
-            ...
+            # ...  #randomly discard labels
+            labels_dsc = torch.rand(labels.shape[0]) < p_uncod
 
-            t = ...
-            x_t, noise = ...
-            predicted_noise = ...
-            loss = ...
+            labels[labels_dsc] = 0
+
+            t = diffusion.sample_timesteps(images.shape[0]).to(device) # line 3 from the Training algorithm
+            x_t, noise = diffusion.q_sample(images,t) # inject noise to the images (forward process), HINT: use q_sample
+            predicted_noise = model(x_t, t,labels) # predict noise of x_t using the UNet
+            loss = mse(noise, predicted_noise) # loss between noise and predicted noise
+
 
             optimizer.zero_grad()
             loss.backward()
@@ -99,7 +107,7 @@ def train(T=500, cfg=True, img_size=16, input_channels=3, channels=32,
 
 
             pbar.set_postfix(MSE=loss.item())
-            logger.add_scalar("MSE", loss.item(), global_step=epoch * l + i)
+            wandb.log({"MSE": loss.item()}, step=epoch * l + i)
 
         epoch_loss /= l
         if epoch_loss <= min_train_loss:

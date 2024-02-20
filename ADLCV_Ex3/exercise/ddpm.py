@@ -20,8 +20,8 @@ class Diffusion:
         self.device = device
         
         # TASK 1: Implement beta, alpha, and alpha_bar
-        scheduling = 'cosine' # 'linear' or 'cosine'
-        self.betas = self.get_betas(scheduling).to(device)
+        scheduling = 'linear' # 'linear' or 'cosine'
+        self.betas = self.get_betas(scheduling).to(device)# HINT: use self.get_betas to calculate betas
         self.alphas = 1 - self.betas
 
         self.alphas_bar = torch.cumprod(self.alphas, dim=0) # cumulative products of alpha 
@@ -29,7 +29,7 @@ class Diffusion:
 
     def get_betas(self, schedule='linear'):
         if schedule == 'linear':
-            return torch.linspace(self.beta_start, self.beta_end, self.T) # HINT: use torch.linspace to create a linear schedule from beta_start to beta_end
+            return torch.nn.Parameter(torch.linspace(self.beta_start, self.beta_end, self.T),requires_grad=False) # HINT: use torch.linspace to create a linear schedule from beta_start to beta_end
         # add your own (e.g. cosine)
         elif schedule == 'cosine':
             ### not sure if this is correct. Should one directly calculate the cumulative betas using the alphas? 
@@ -60,7 +60,7 @@ class Diffusion:
         sqrt_one_minus_alpha_bar = torch.sqrt(1 - self.alphas_bar[t]) # HINT: calculate the sqrt of 1 - alphas_bar at time step t
         sqrt_one_minus_alpha_bar = sqrt_one_minus_alpha_bar[:, None, None, None]# match image dimensions
         
-        noise = torch.normal(torch.zeros(x.shape),torch.ones(x.shape)) # HINT: sample noise from a normal distribution. It should match the shape of x 
+        noise = torch.normal(torch.zeros(x.shape),torch.ones(x.shape)).to(self.device) # HINT: sample noise from a normal distribution. It should match the shape of x 
         assert noise.shape == x.shape, 'Invalid shape of noise'
         
         x_noised = sqrt_alpha_bar * x + sqrt_one_minus_alpha_bar * noise # HINT: Create the noisy version of x. See Eq. 4 in the ddpm paper at page 2
@@ -92,7 +92,7 @@ class Diffusion:
         # HINT: Having calculate the mean and std of p(x{x_t} | x_t), we sample noise from a normal distribution.
         # see line 3 of the Algorithm 2 (Sampling) at page 4 of the ddpm paper.
         
-        noise = torch.normal(torch.zeros(x_t.shape),torch.ones(x_t.shape)) # HINT: sample noise from a normal distribution. It should match the shape of x_t
+        noise = torch.normal(torch.zeros(x_t.shape),torch.ones(x_t.shape)).to(self.device) # HINT: sample noise from a normal distribution. It should match the shape of x_t
         noise[t==0] = 0 # no noise for t=0        
 
         x_t_prev = mean + std * noise # Calculate x_{t-1}, see line 4 of the Algorithm 2 (Sampling) at page 4 of the ddpm paper.

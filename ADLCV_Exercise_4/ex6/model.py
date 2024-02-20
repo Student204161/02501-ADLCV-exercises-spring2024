@@ -141,7 +141,14 @@ class UNet(nn.Module):
             # Project one-hot encoded labels to the time embedding dimension 
             # Implement it as a 2-layer MLP with a GELU activation in-between
             # self.label_emb = ...
-            pass
+            self.label_emb = nn.Sequential(
+                    nn.Linear(
+                        num_classes,
+                        time_dim // 2
+                    ),
+                    nn.GELU(),
+                    nn.Linear(time_dim//2, time_dim)
+                )
             
 
     def forward(self, x, t, y=None):
@@ -151,7 +158,8 @@ class UNet(nn.Module):
 
         if y is not None:
             # Add label and time embeddings together
-            pass
+            t = t + self.label_emb(y)
+
             
         x1 = self.inc(x)
         x2 = self.down1(x1, t)
@@ -170,13 +178,18 @@ class UNet(nn.Module):
         x = self.up3(x, x1, t)
         x = self.sa6(x)
         output = self.outc(x)
-
         return output
 
 class Classifier(nn.Module):
     def __init__(self, img_size=16, c_in=3, labels=5, time_dim=256, device="cuda", channels=32):
         super().__init__()
-        pass
-
+        self.Unet = UNet(img_size, c_in, labels, time_dim, device, channels)
+        self.cls_layer = nn.Linear((img_size**2)*labels, labels)
+        self.softmax = nn.Softmax(dim=-1)    
     def forward(self, x, t):
-        return
+        #might have to take argmax of the output...
+        predicted_noise = self.Unet(x, t)
+        predicted_logits = self.cls_layer(predicted_noise.flatten(1,))
+        #predicted_label = self.softmax(x)
+
+        return predicted_logits

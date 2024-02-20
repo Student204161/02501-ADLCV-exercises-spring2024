@@ -8,8 +8,8 @@ import random
 import torch
 import torch.nn as nn
 from torch import optim
-
-from torch.utils.tensorboard import SummaryWriter
+import wandb
+#from torch.utils.tensorboard import SummaryWriter
 
 # custom imports
 from ddpm import Diffusion
@@ -43,6 +43,11 @@ def train(device='cpu', T=500, img_size=16, input_channels=3, channels=32, time_
     loss_fn = nn.CrossEntropyLoss()
     softmax = nn.Softmax(dim=-1)
     pbar = tqdm(range(1, EPOCHS + 1), desc='Training')
+    
+    #wandb init
+    wandb.init(project="classifier", name=exp_name, config={"T": T, "img_size": img_size, 
+                                                             "input_channels": input_channels, "channels": channels, "time_dim": time_dim, 
+                                                             "experiment_name": exp_name, "device": device})
 
 
     for epoch in pbar:
@@ -52,9 +57,23 @@ def train(device='cpu', T=500, img_size=16, input_channels=3, channels=32, time_
             labels = labels.to(device)
 
             # Do not forget to noise your images !
+            # sample from standard normal
+            t = diffusion.sample_timesteps(images.shape[0]).to(device) # line 3 from the Training algorithm
+            x_t, noise = diffusion.q_sample(images,t) # inject noise to the images (forward process), HINT: use q_sample
+            predicted_logits = model(x_t, t) # predict noise of x_t using the UNet
 
-            ...
-    
+            predicted_labels = softmax(predicted_logits)
+            loss = loss_fn(predicted_labels, labels)
+
+            
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            wandb.log({"train_loss": loss.item()})
+
+            
+
     # save your checkpoint in weights/classifier/model.pth
     torch.save(model.state_dict(), os.path.join("weights", exp_name, 'model.pth'))
 

@@ -15,6 +15,7 @@ logging.basicConfig(format="%(asctime)s - %(levelname)s: %(message)s", level=log
 from ddpm import Diffusion
 from model import UNet
 
+#torch.set_grad_enabled(True)
 SEED = 1
 DATASET_SIZE = 40000
 
@@ -84,13 +85,12 @@ def train(device='cpu', T=500, img_size=16, input_channels=3, channels=32, time_
             images = images.to(device)
 
             # TASK 4: implement the training loop
-            t = diffusion.sample_timesteps(images.shape[0]).to(device) # line 3 from the Training algorithm
+            t = diffusion.sample_timesteps(images.shape[0])# line 3 from the Training algorithm
             x_t, noise = diffusion.q_sample(images,t) # inject noise to the images (forward process), HINT: use q_sample
-            predicted_noise = diffusion.p_sample_loop(model, batch_size, None) # predict noise of x_t using the UNet
+            predicted_noise = model(x_t,t) # predict noise of x_t using the UNet
             loss = mse(noise, predicted_noise) # loss between noise and predicted noise
-            
             optimizer.zero_grad()
-            loss.backward()
+            loss.backward()           
             optimizer.step()
 
 

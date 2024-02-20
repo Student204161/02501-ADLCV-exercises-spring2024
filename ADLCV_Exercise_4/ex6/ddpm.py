@@ -38,8 +38,18 @@ class Diffusion:
     def get_betas(self, schedule='linear'):
         if schedule == 'linear':
             return torch.linspace(self.beta_start, self.beta_end, self.T)
-        else :
-            raise NotImplementedError('Not implemented!')
+        elif schedule == 'cosine':
+            ### not sure if this is correct. Should one directly calculate the cumulative betas using the alphas? 
+            ### Framework calculates cumulative alphas & betas in other function so need stuff changed for reusing.
+            s = 1e-5 #offset
+            fts = torch.cos(torch.Tensor([( ( (t/self.T+s)/(1+s) ) * math.pi/2 ) for t in range(self.T)]))**2
+            alpha_bars = [fts[t]/fts[0] for t in range(self.T)]
+            betas = [1 - (alpha_bars[t]/alpha_bars[t-1]) for t in range(self.T)]
+            betas[0] = s #beta[0] is very negative if not manually setting beta[0] to either 0 or a small number.
+            betas = torch.clip(torch.Tensor(betas),min=0,max=0.9999)
+            return betas
+        else:
+            raise ValueError(f"Schedule {schedule} not implemented")
     
 
     def q_sample(self, x, t):
