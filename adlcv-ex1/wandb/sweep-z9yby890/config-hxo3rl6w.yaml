@@ -1,0 +1,18 @@
+wandb_version: 1
+
+dropout:
+  value: 0.4
+embed_dim:
+  value: 128
+num_epochs:
+  value: 10
+num_heads:
+  value: 10
+num_layers:
+  value: 5
+pool:
+  value: max
+post_enc:
+  value: fixed
+weight_decay:
+  value: 1.0e-05
