@@ -17,7 +17,7 @@ from model import Classifier
 from util import set_seed, prepare_dataloaders
 
 
-EPOCHS = 20
+EPOCHS = 30
 
 def create_result_folders(experiment_name):
     os.makedirs(os.path.join("weights", experiment_name), exist_ok=True)
@@ -71,7 +71,10 @@ def train(device='cpu', T=500, img_size=16, input_channels=3, channels=32, time_
             optimizer.step()
 
             wandb.log({"train_loss": loss.item()})
-
+            #predicted train accuracy
+            predicted = torch.argmax(predicted_labels, dim=1)
+            accuracy = (predicted == labels).sum().item() / predicted_labels.size(0)
+            wandb.log({"train_accuracy": accuracy})
             
 
     # save your checkpoint in weights/classifier/model.pth
