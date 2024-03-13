@@ -29,6 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--conf', type=int, default=1, help='Configuration for losses (1-3)')
 args = parser.parse_args()
 conf = args.conf
+conf=2
 assert conf in [1,2,3], f'Invalid configuration!'
 
 """
@@ -56,7 +57,7 @@ Define model
 model = Network()
 model.to(device)
 model.load_state_dict(torch.load(f'weights/given-conf-{conf}.pth', map_location=device))
-conf=3
+
 """
 loss function
 """
@@ -89,6 +90,7 @@ for epoch in tqdm(range(NUM_EPOCHS), desc=f'Training for conf {conf}'):
     total_train_loss = 0
     for f1, f2, f3 in train_loader:
         # TASK 2: Implement the training loop
+        f1,f2,f3 = f1.to(device), f2.to(device), f3.to(device)
         out_dict = model(f1.to(device), f3.to(device))
 
         output_im = out_dict['output_im']

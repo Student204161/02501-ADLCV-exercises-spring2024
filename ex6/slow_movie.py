@@ -21,6 +21,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--conf', type=int, default=1, help='Configuration for losses (1-3)')
 args = parser.parse_args()
 conf = args.conf
+conf = 2
 assert conf in {1,2,3}
 
 video_path = f'./data/DAVIS17/JPEGImages/480p/{VIDEO}'

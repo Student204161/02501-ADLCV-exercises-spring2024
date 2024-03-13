@@ -42,13 +42,13 @@ class VFILoss(nn.Module):
         total_loss = 0
         for loss_func, weight in self.losses_dict.items():
             if loss_func == 'rec_loss': # Reconstruction loss
-                tmp_loss = self.l1_loss(input,target.to(self.devi)) # TASK 3
+                tmp_loss = self.l1_loss(input,target) # TASK 3
 
             elif loss_func == 'bidir_rec_loss': # Bidirectional reconstruction loss
                 tmp_loss = self.l1_loss(input, interp0*w0) + self.l1_loss(input, interp2*w2) # TASK 4
 
             elif loss_func == 'feature_loss': # Feature Loss
-                tmp_loss = self.l2_loss(self.vgg(input), self.vgg(target.to(self.devi))) # TASK 5
+                tmp_loss = self.l2_loss(self.vgg(input), self.vgg(target)) # TASK 5
 
 
             else:
