@@ -6,3 +6,8 @@ adlcv-ex1/.data/
 wandb/
 adlcv-ex1/models/
 02501-ADLCV-exercises-spring2024.code-workspace
+ex5/data/
+ex6/data/
+ex5/runs/
+ex6/runs/
+ex6/results/
